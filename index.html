@@ -3,22 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmony Finanzas v11</title>
+    <title>Harmony Finanzas v12</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            blue: '#1e3a8a', // Indigo oscuro
-                            green: '#10b981', // Esmeralda
-                            bg: '#f0fdf4' // Fondo verde muy tenue
-                        }
-                    }
-                }
-            }
+            theme: { extend: { colors: { brand: { blue: '#1e3a8a', green: '#10b981', bg: '#f0fdf4' } } } }
         }
     </script>
     <style>
@@ -30,124 +20,68 @@
 
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6 bg-white">
         <div class="max-w-md w-full text-center">
-            <div class="inline-block p-5 bg-green-100 rounded-3xl text-brand-green mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-            </div>
-            <h1 id="auth-title" class="text-4xl font-extrabold text-brand-blue mb-2">Harmony</h1>
-            <p id="auth-subtitle" class="text-slate-500 mb-10 text-lg">Tu control financiero, seguro y visual.</p>
-            
-            <div class="space-y-4 text-left bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
-                <input type="text" id="user-input" placeholder="Usuario" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none transition-all">
-                <input type="password" id="pass-input" placeholder="PIN de acceso" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-2 focus:ring-brand-green outline-none transition-all">
-                <button onclick="handleAuth()" id="auth-btn" class="w-full bg-brand-blue text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-100 hover:bg-black transition active:scale-95 text-lg">INGRESAR</button>
-                <button onclick="toggleAuthMode()" id="toggle-btn" class="w-full text-center text-sm font-semibold text-brand-green pt-3">¿Eres nuevo? Regístrate aquí</button>
+            <h1 class="text-4xl font-extrabold text-brand-blue mb-2">Harmony</h1>
+            <div class="space-y-4 text-left bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 mt-6">
+                <input type="text" id="user-input" placeholder="Usuario" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
+                <input type="password" id="pass-input" placeholder="PIN" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
+                <button onclick="handleAuth()" class="w-full bg-brand-blue text-white font-bold py-4 rounded-2xl">INGRESAR</button>
             </div>
         </div>
     </div>
 
     <div id="main-app" class="hidden min-h-screen">
-        <header class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-100 p-5 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-brand-green text-white rounded-lg font-bold text-sm">H</div>
-                <h2 class="font-bold text-slate-900 text-lg">Hola, <span id="user-logged" class="text-brand-blue">User</span></h2>
-            </div>
-            <button onclick="logout()" class="text-xs font-bold text-slate-500 hover:text-red-600 transition">
-                Cerrar Sesión
-            </button>
+        <header class="bg-white border-b p-5 flex justify-between items-center sticky top-0 z-50">
+            <h2 class="font-bold text-lg">Hola, <span id="user-logged" class="text-brand-blue"></span></h2>
+            <button onclick="logout()" class="text-xs font-bold text-red-500">Cerrar Sesión</button>
         </header>
 
         <main class="max-w-6xl mx-auto p-5 space-y-8">
-            
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Presupuesto (Regla 50/30/20)</h3>
-                        <span class="text-xs p-1 px-2 bg-indigo-50 text-brand-blue rounded-full font-bold">Mes Actual</span>
-                    </div>
-                    <div class="chart-container flex justify-center items-center">
-                        <canvas id="pilarChart"></canvas>
-                    </div>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-400 mb-4">BALANCE 50/30/20</h3>
+                    <div class="chart-container"><canvas id="pilarChart"></canvas></div>
                 </div>
-
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest">Cartera de Activos e Inversiones</h3>
-                        <span class="text-xs p-1 px-2 bg-green-50 text-brand-green rounded-full font-bold">Tiempo Real</span>
-                    </div>
-                    <div class="chart-container flex justify-center items-center">
-                        <canvas id="assetsChart"></canvas>
-                    </div>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-400 mb-4">MIS ACTIVOS</h3>
+                    <div class="chart-container"><canvas id="assetsChart"></canvas></div>
                 </div>
             </div>
 
-            <div class="bg-white p-10 rounded-[2.5rem] shadow-lg border-l-4 border-brand-green">
-                <div class="flex items-center gap-4 mb-10">
-                    <div class="p-3 bg-brand-bg text-brand-green rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-lg border-l-4 border-brand-green">
+                <h3 class="font-extrabold text-2xl mb-6">Nuevo Registro</h3>
+                <form id="finance-form" onsubmit="saveData(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="date" id="Fecha" name="Fecha" class="p-4 bg-slate-50 rounded-xl border" required>
+                        <input type="number" name="Monto" step="0.01" placeholder="$ Monto" class="p-4 bg-slate-50 rounded-xl border font-bold text-brand-green" required>
                     </div>
-                    <h3 class="font-extrabold text-3xl text-slate-950">Nuevo Registro</h3>
-                </div>
-                
-                <form id="finance-form" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <input type="date" id="Fecha" name="Fecha" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-brand-green" required>
-                        <input type="number" name="Monto" step="0.01" placeholder="Monto $" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold text-brand-green text-3xl" required>
-                    </div>
-                    <input type="text" name="Concepto" placeholder="Detalle (ej: Guardia o Supermercado)" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-brand-green" required>
-                    <select id="Categoria" name="Categoria" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-brand-green" required>
+                    <input type="text" name="Concepto" placeholder="Detalle" class="w-full p-4 bg-slate-50 rounded-xl border" required>
+                    <select id="Categoria" name="Categoria" class="w-full p-4 bg-slate-50 rounded-xl border" required>
                         <option value="Guardia">💰 Ingreso: Guardia</option>
-                        <option value="Alquiler">🏠 Necesidad: Alquiler / Vivienda</option>
-                        <option value="Supermercado">🛒 Necesidad: Supermercado</option>
-                        <option value="Salidas">🍷 Deseo: Salidas y Ocio</option>
-                        <option value="Inversión">📈 Ahorro: Compra Activo</option>
+                        <option value="Alquiler">🏠 Necesidad: Alquiler</option>
+                        <option value="Supermercado">🛒 Necesidad: Super</option>
+                        <option value="Salidas">🍷 Deseo: Ocio</option>
+                        <option value="Inversión">📈 Ahorro: Inversión</option>
                     </select>
-                    <button type="submit" id="submit-btn" class="w-full bg-brand-blue text-white font-bold py-5 rounded-2xl shadow-lg shadow-blue-100 hover:bg-black transition active:scale-95 text-lg">
-                        CONFIRMAR REGISTRO EN LA NUBE
-                    </button>
+                    <button type="submit" id="submit-btn" class="w-full bg-brand-blue text-white font-bold py-4 rounded-xl shadow-lg">GUARDAR EN DRIVE</button>
                 </form>
-                <p id="status-msg" class="text-center mt-6 font-bold text-brand-green hidden bg-green-50 py-3 rounded-xl border border-green-100">✅ Movimiento sincronizado correctamente</p>
+                <p id="status-msg" class="text-center mt-4 font-bold text-brand-green hidden">✅ ¡Guardado con éxito!</p>
             </div>
         </main>
     </div>
 
     <script>
         const API_URL = 'https://api.sheetbest.com/sheets/c69df2de-cb38-4d8b-b942-7616b4683eeb';
-        let isLoginMode = true;
         let currentUser = "";
         let charts = {};
-
-        // LÓGICA DE AUTENTICACIÓN
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "Harmony" : "Crea tu Cuenta";
-            document.getElementById('auth-btn').innerText = isLoginMode ? "INGRESAR" : "REGISTRARME";
-            document.getElementById('toggle-btn').innerText = isLoginMode ? "¿Eres nuevo? Regístrate aquí" : "¿Ya tienes cuenta? Ingresa";
-        }
 
         function handleAuth() {
             const user = document.getElementById('user-input').value.trim();
             const pin = document.getElementById('pass-input').value.trim();
-            if (!user || !pin) return alert("Completa los campos");
-            let users = JSON.parse(localStorage.getItem('harmony_users_v2') || '{}');
-
-            if (isLoginMode) {
-                if (users[user] && users[user] === pin) { startApp(user); }
-                else { alert("Datos incorrectos"); }
-            } else {
-                if (users[user]) return alert("El usuario ya existe");
-                users[user] = pin;
-                localStorage.setItem('harmony_users_v2', JSON.stringify(users));
-                alert("¡Registro exitoso! Ya puedes ingresar.");
-                toggleAuthMode();
+            if(user && pin) { 
+                localStorage.setItem('harmony_user', user);
+                startApp(user); 
             }
         }
-
-        function logout() { location.reload(); }
 
         function startApp(user) {
             currentUser = user;
@@ -158,86 +92,90 @@
             loadCharts();
         }
 
-        // CARGA DE GRÁFICOS (Verde y Azul)
         async function loadCharts() {
             try {
-                // 1. Gráfico Balance (Azul Indigo)
-                const resBal = await fetch(`${API_URL}/tabs/Balance`);
-                const dataBal = await resBal.json();
-                
-                if (charts.pilar) charts.pilar.destroy();
-                charts.pilar = new Chart(document.getElementById('pilarChart'), {
+                const [rBal, rInv] = await Promise.all([
+                    fetch(`${API_URL}/tabs/Balance`),
+                    fetch(`${API_URL}/tabs/Inversiones_Ahorro`)
+                ]);
+                const dBal = await rBal.json();
+                const dInv = await rInv.json();
+
+                if(charts.p) charts.p.destroy();
+                charts.p = new Chart(document.getElementById('pilarChart'), {
                     type: 'doughnut',
-                    data: {
-                        labels: dataBal.map(d => d.Pilar),
-                        datasets: [{
-                            data: dataBal.map(d => parseFloat(d.Monto) || 0),
-                            // Paleta Azul/Indigo
-                            backgroundColor: ['#1e3a8a', '#3730a3', '#4f46e5'], 
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { cutout: '80%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, padding: 20 } } } }
+                    data: { labels: dBal.map(x => x.Pilar), datasets: [{ data: dBal.map(x => x.Monto), backgroundColor: ['#1e3a8a','#4f46e5','#10b981'] }] }
                 });
 
-                // 2. Gráfico Activos (Paleta Verde) - MUESTRA APPLE, NVIDIA, etc.
-                const resInv = await fetch(`${API_URL}/tabs/Inversiones_Ahorro`);
-                const dataInv = await resInv.json();
-                
-                if (charts.assets) charts.assets.destroy();
-                charts.assets = new Chart(document.getElementById('assetsChart'), {
+                if(charts.a) charts.a.destroy();
+                charts.a = new Chart(document.getElementById('assetsChart'), {
                     type: 'pie',
-                    data: {
-                        labels: dataInv.map(i => i.Activo), // Aquí se muestran los nombres de los activos
-                        datasets: [{
-                            data: dataInv.map(i => parseFloat(i.Valor_Total_ARS) || 0),
-                            // Paleta Verde Esmeralda
-                            backgroundColor: ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, usePointStyle: true, padding: 20 } } } }
+                    data: { labels: dInv.map(x => x.Activo), datasets: [{ data: dInv.map(x => x.Valor_Total_ARS), backgroundColor: ['#059669','#10b981','#34d399','#6ee7b7'] }] }
                 });
-            } catch (e) { console.error("Error cargando gráficos", e); }
+            } catch(e) { console.log("Error cargando gráficos"); }
         }
 
-        // GUARDAR MOVIMIENTO (Sin cerrar sesión)
-        document.getElementById('finance-form').addEventListener('submit', async (e) => {
+        async function saveData(e) {
             e.preventDefault();
+            e.stopPropagation(); // BLOQUEA LA RECARGA DE PÁGINA
+            
             const btn = document.getElementById('submit-btn');
             const status = document.getElementById('status-msg');
             btn.disabled = true;
-            btn.innerText = "Sincronizando...";
+            btn.innerText = "ENVIANDO...";
 
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
+            const form = document.getElementById('finance-form');
+            const formData = new FormData(form);
+            const rawData = Object.fromEntries(formData);
             
             // Asignación de pilar
-            if (data.Categoria === "Guardia") data.Pilar_Regla = "Ingreso";
-            else if (["Alquiler", "Supermercado"].includes(data.Categoria)) data.Pilar_Regla = "Necesidades (50%)";
-            else if (data.Categoria === "Salidas") data.Pilar_Regla = "Deseos (30%)";
-            else data.Pilar_Regla = "Ahorro/Inversion (20%)";
-            
-            data.Usuario = currentUser;
+            let pilar = "Ahorro/Inversion (20%)";
+            if (rawData.Categoria === "Guardia") pilar = "Ingreso";
+            else if (["Alquiler", "Supermercado"].includes(rawData.Categoria)) pilar = "Necesidades (50%)";
+            else if (rawData.Categoria === "Salidas") pilar = "Deseos (30%)";
+
+            const dataToSend = [{
+                ...rawData,
+                Pilar_Regla: pilar,
+                Usuario: currentUser,
+                Fecha: rawData.Fecha // Formato YYYY-MM-DD
+            }];
 
             try {
-                await fetch(API_URL, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(dataToSend)
                 });
-                
-                status.classList.remove('hidden');
-                e.target.reset();
-                document.getElementById('Fecha').valueAsDate = new Date();
-                
-                // Actualización silenciosa de gráficos
-                await loadCharts();
-                
-                setTimeout(() => { status.classList.add('hidden'); }, 4000);
-            } catch (err) { alert("Error al conectar con la nube."); }
-            finally { btn.disabled = false; btn.innerText = "CONFIRMAR REGISTRO EN LA NUBE"; }
-        });
+
+                if(response.ok) {
+                    status.classList.remove('hidden');
+                    form.reset();
+                    document.getElementById('Fecha').valueAsDate = new Date();
+                    await loadCharts();
+                    setTimeout(() => status.classList.add('hidden'), 3000);
+                } else {
+                    alert("Error en el servidor de Google Sheets");
+                }
+            } catch (err) {
+                alert("Error de conexión. Revisa tu internet.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "GUARDAR EN DRIVE";
+            }
+            return false;
+        }
+
+        function logout() {
+            localStorage.removeItem('harmony_user');
+            location.reload();
+        }
+
+        // Auto-login si ya existe el usuario
+        window.onload = () => {
+            const saved = localStorage.getItem('harmony_user');
+            if(saved) startApp(saved);
+        }
     </script>
 </body>
 </html>
