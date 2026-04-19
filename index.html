@@ -1,81 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finanzas</title>
+    <title>Mi Control Financiero</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            text-align: center;
-            padding: 50px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        h1 {
-            font-size: 3em;
-            margin: 0;
-        }
-        form {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        input[type="text"], input[type="email"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            transition: border 0.3s;
-        }
-        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
-            border: 1px solid #ff7e5f;
-            outline: none;
-        }
-        button {
-            background-color: #ff7e5f;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #feb47b;
-        }
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: white;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-        }
+        body { -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
-<body>
-    <header>
-        <h1>Welcome to Finanzas</h1>
-    </header>
-    <form>
-        <input type="text" placeholder="Your Name" required />
-        <input type="email" placeholder="Your Email" required />
-        <input type="password" placeholder="Your Password" required />
-        <button type="submit">Submit</button>
-    </form>
-    <footer>
-        &copy; 2026 Finanzas
-    </footer>
-</body>
-</html>
+<body class="bg-gray-100 p-4 font-sans">
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg overflow-hidden p-6 mt-4">
+        <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center border-b pb-4">Registrar Gasto/Ingreso</h1>
+        
+        <form id="finance-form" class="space-y-5">
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha</label>
+                <input type="date" id="Fecha" name="Fecha" class="mt-1 block w-full border-gray-200 rounded-lg shadow-sm p-3 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Concepto / Detalle</label>
+                <input type="text" name="Concepto" placeholder="Ej: Guardia Cetrángolo o Super" class="mt-1 block w-full border-gray-200 rounded-lg shadow-sm p-3 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Categoría</label>
+                <select id="Categoria" name="Categoria" class="mt-1 block w-full border-gray-200 rounded-lg shadow-sm p-3 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" required>
+                    <optgroup label="--- INGRESOS ---">
+                        <option value="Guardia">Guardia</option>
+                        <option value="Trabajo Cetrangolo">Trabajo Cetrángolo</option>
+                    </optgroup>
+                    <optgroup label="--- GASTOS FIJOS (50%) ---">
+                        <option value="Alquiler">Alquiler / Expensas</option>
+                        <option value="Luz/Gas/Internet">Luz / Gas / Internet</option>
+                        <option value="Impuestos">Monotributo / Impuestos</option>
+                        <option value="Salud">Col. Médico / Caja Médica</option>
+                        <option value="Supermercado">Supermercado</option>
+                        <option value="Transporte">Transporte / Nafta</option>
+                    </optgroup>
+                    <optgroup label="--- VARIABLE (30%) ---">
+                        <option value="Salidas">Salidas / Cenas</option>
+                        <option value="Extras">Gastos Extras</option>
+                    </optgroup>
+                    <optgroup label="--- INVERSIÓN (20%) ---">
+                        <option value="Inversión">Activos (Acciones/Bonos)</option>
+                        <option value="Metroterra">Metroterra</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Monto ($)</label>
+                <input type="number" name="Monto" step="0.01" class="mt-1 block w-full border-gray-200 rounded-lg shadow-sm p-3 bg-gray-50 text-2xl font-bold text-blue-600 focus:ring-blue-500" placeholder="0.00" required>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Cuenta</label>
+                <select name="Cuenta" class="mt-1 block w-full border-gray-200 rounded-lg shadow-sm p-3 bg-gray-50">
+                    <option value="Banco">Banco</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Billetera Virtual">Billetera Virtual</option>
+                </select>
+            </div>
+
+            <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white font-bold py-4 px-4 rounded-xl shadow-lg hover:bg-blue-700 active:transform active:scale-95 transition-all duration-150">
+                GUARDAR EN MI APP
+            </button>
+        </form>
+        
+        <p id="status" class="mt-4 text-center text-sm font-medium hidden"></p>
+    </div>
+
+    <script>
+        // Setea la fecha de hoy por defecto
+        document.getElementById('Fecha').valueAsDate = new Date();
+
+        const form = document.getElementById('finance-form');
+        const btn = document.getElementById('submit-btn');
+        const status = document.getElementById('status');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            
+            // UI de carga
+            btn.disabled = true;
+            btn.innerText = 'Procesando...';
+            status.classList.remove('hidden', 'text-red-600', 'text-green-600');
+            status.innerText = 'Enviando a Google Sheets...';
+            status.classList.add('block', 'text-gray-500');
+
+            // Determinar Pilar automáticamente para tu reporte 50/30/20
+            const categoria = document.getElementById('Categoria').value;
+            let pilar = "";
+            
+            if (["Guardia", "Trabajo Cetrangolo"].includes(categoria)) {
+                pilar = "Ingreso";
+            } else if (["Alquiler", "Luz/Gas/Internet", "Impuestos", "Salud", "Supermercado", "Transporte"].includes(categoria)) {
+                pilar = "Necesidades (50%)";
+            } else if (["Salidas", "Extras"].includes(categoria)) {
+                pilar = "Deseos (30%)";
+            } else {
+                pilar
