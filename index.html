@@ -1,200 +1,56 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmony Finanzas v10</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .chart-container { position: relative; height:250px; width:100%; }
-        body { -webkit-tap-highlight-color: transparent; }
-    </style>
-</head>
-<body class="bg-[#fcfdfe] font-sans text-slate-800 pb-20">
+Sub CrearLibroFinanciero_Excel()
+    Dim wb As Workbook: Set wb = ThisWorkbook
+    Dim ws As Worksheet
 
-    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6">
-        <div class="max-w-md w-full bg-white rounded-[2.5rem] shadow-xl p-10 border border-slate-100 text-center">
-            <h1 id="auth-title" class="text-3xl font-extrabold text-slate-950 mb-2">Bienvenido</h1>
-            <p id="auth-subtitle" class="text-slate-500 mb-8">Ingresa para ver tus gráficos</p>
-            
-            <div class="space-y-4 text-left">
-                <input type="text" id="user-input" placeholder="Usuario" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                <input type="password" id="pass-input" placeholder="PIN" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                <button onclick="handleAuth()" id="auth-btn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95">INGRESAR</button>
-                <button onclick="toggleAuthMode()" id="toggle-btn" class="w-full text-center text-sm font-semibold text-indigo-600 pt-2">¿Nuevo? Regístrate</button>
-            </div>
-        </div>
-    </div>
+    ' Registro_Movimientos
+    On Error Resume Next
+    Application.DisplayAlerts = False
+    wb.Worksheets("Registro_Movimientos").Delete
+    wb.Worksheets("Balance").Delete
+    wb.Worksheets("Inversiones_Ahorro").Delete
+    wb.Worksheets("Config_Categorias").Delete
+    Application.DisplayAlerts = True
+    On Error GoTo 0
 
-    <div id="main-app" class="hidden min-h-screen">
-        <header class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-100 p-5 flex justify-between items-center">
-            <h2 class="font-bold text-slate-900 text-lg">Hola, <span id="user-logged" class="text-indigo-600">User</span></h2>
-            <button onclick="logout()" class="p-3 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50 hover:text-red-600 transition">
-                Cerrar Sesión
-            </button>
-        </header>
+    Set ws = wb.Worksheets.Add(After:=wb.Sheets(wb.Sheets.Count))
+    ws.Name = "Registro_Movimientos"
+    ws.Range("A1:H1").Value = Array("ID","Fecha","Concepto","Categoria","Pilar_Regla","Monto","Cuenta","Usuario")
+    ws.Range("A2:H2").Value = Array(1, "2026-04-19", "Carga Inicial", "Guardia", "Ingreso", 0, "Banco", "Admin")
+    ws.Columns("B").NumberFormat = "yyyy-mm-dd"
+    ws.Columns("F").NumberFormat = "$#,##0.00"
 
-        <main class="max-w-5xl mx-auto p-5 space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Mi Balance (Regla 50/30/20)</h3>
-                    <div class="chart-container flex justify-center items-center">
-                        <canvas id="pilarChart"></canvas>
-                    </div>
-                </div>
+    ' Balance
+    Set ws = wb.Worksheets.Add(After:=wb.Sheets(wb.Sheets.Count))
+    ws.Name = "Balance"
+    ws.Range("A1:B1").Value = Array("Pilar","Monto")
+    ws.Range("A2").Value = "Necesidades (50%)"
+    ws.Range("B2").Formula = "=SUMIF(Registro_Movimientos!E:E,""Necesidades (50%)"",Registro_Movimientos!F:F)"
+    ws.Range("A3").Value = "Deseos (30%)"
+    ws.Range("B3").Formula = "=SUMIF(Registro_Movimientos!E:E,""Deseos (30%)"",Registro_Movimientos!F:F)"
+    ws.Range("A4").Value = "Ahorro/Inversion (20%)"
+    ws.Range("B4").Formula = "=SUMIF(Registro_Movimientos!E:E,""Ahorro/Inversion (20%)"",Registro_Movimientos!F:F)"
 
-                <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Mis Activos (Bolsa/Ahorro)</h3>
-                    <div class="chart-container flex justify-center items-center">
-                        <canvas id="assetsChart"></canvas>
-                    </div>
-                </div>
-            </div>
+    ' Inversiones_Ahorro
+    Set ws = wb.Worksheets.Add(After:=wb.Sheets(wb.Sheets.Count))
+    ws.Name = "Inversiones_Ahorro"
+    ws.Range("A1:E1").Value = Array("Activo","Ticker_Ref","Cantidad","Precio_Actual","Valor_Total_ARS")
+    ws.Range("A2:E4").Value = Array( _
+        Array("Apple","NASDAQ:AAPL",0,"", "=C2*D2"), _
+        Array("Nvidia","NASDAQ:NVDA",0,"", "=C3*D3"), _
+        Array("Metroterra","Manual",1,0,"=C4*D4") _
+    )
 
-            <div class="bg-white p-10 rounded-[2.5rem] shadow-md border-t-4 border-indigo-600">
-                <h3 class="font-extrabold text-2xl text-slate-950 mb-10">Nuevo Registro</h3>
-                <form id="finance-form" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <input type="date" id="Fecha" name="Fecha" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none" required>
-                        <input type="number" name="Monto" step="0.01" placeholder="Monto $" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold text-indigo-600 text-2xl" required>
-                    </div>
-                    <input type="text" name="Concepto" placeholder="Detalle (ej: Supermercado)" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none" required>
-                    <select id="Categoria" name="Categoria" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none" required>
-                        <option value="Guardia">💰 Ingreso: Guardia</option>
-                        <option value="Alquiler">🏠 Necesidad: Alquiler / Vivienda</option>
-                        <option value="Supermercado">🛒 Necesidad: Supermercado</option>
-                        <option value="Salidas">🍷 Deseo: Salidas y Ocio</option>
-                        <option value="Inversión">📈 Ahorro: Compra Activo</option>
-                    </select>
-                    <button type="submit" id="submit-btn" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95 text-lg">
-                        CONFIRMAR REGISTRO
-                    </button>
-                </form>
-                <p id="status-msg" class="text-center mt-4 font-bold text-green-600 hidden">✅ Guardado correctamente</p>
-            </div>
-        </main>
-    </div>
+    ' Config_Categorias
+    Set ws = wb.Worksheets.Add(After:=wb.Sheets(wb.Sheets.Count))
+    ws.Name = "Config_Categorias"
+    ws.Range("A1:B1").Value = Array("Categoria","Pilar_Asociado")
+    ws.Range("A2:B6").Value = Array( _
+        Array("Guardia","Ingreso"), _
+        Array("Alquiler","Necesidades"), _
+        Array("Supermercado","Necesidades"), _
+        Array("Salidas","Deseos"), _
+        Array("Inversión","Ahorro") _
+    )
 
-    <script>
-        const API_URL = 'https://api.sheetbest.com/sheets/c69df2de-cb38-4d8b-b942-7616b4683eeb';
-        let isLoginMode = true;
-        let currentUser = "";
-        let charts = {}; // Para guardar las instancias de los gráficos
-
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? "Bienvenido" : "Crea tu Cuenta";
-            document.getElementById('auth-btn').innerText = isLoginMode ? "INGRESAR" : "REGISTRARME";
-        }
-
-        function handleAuth() {
-            const user = document.getElementById('user-input').value.trim();
-            const pin = document.getElementById('pass-input').value.trim();
-            if (!user || !pin) return alert("Completa los campos");
-            let users = JSON.parse(localStorage.getItem('harmony_users') || '{}');
-
-            if (isLoginMode) {
-                if (users[user] && users[user] === pin) { startApp(user); }
-                else { alert("Datos incorrectos"); }
-            } else {
-                users[user] = pin;
-                localStorage.setItem('harmony_users', JSON.stringify(users));
-                alert("¡Registrado! Ya puedes ingresar.");
-                toggleAuthMode();
-            }
-        }
-
-        function logout() { location.reload(); }
-
-        function startApp(user) {
-            currentUser = user;
-            document.getElementById('user-logged').innerText = user;
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('Fecha').valueAsDate = new Date();
-            loadCharts();
-        }
-
-        async function loadCharts() {
-            try {
-                // Balance
-                const resBal = await fetch(`${API_URL}/tabs/Balance`);
-                const dataBal = await resBal.json();
-                
-                if (charts.pilar) charts.pilar.destroy();
-                charts.pilar = new Chart(document.getElementById('pilarChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: dataBal.map(d => d.Pilar),
-                        datasets: [{
-                            data: dataBal.map(d => parseFloat(d.Monto) || 0),
-                            backgroundColor: ['#4f46e5', '#f43f5e', '#10b981'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { cutout: '75%', plugins: { legend: { position: 'bottom' } } }
-                });
-
-                // Activos
-                const resInv = await fetch(`${API_URL}/tabs/Inversiones_Ahorro`);
-                const dataInv = await resInv.json();
-                
-                if (charts.assets) charts.assets.destroy();
-                charts.assets = new Chart(document.getElementById('assetsChart'), {
-                    type: 'pie',
-                    data: {
-                        labels: dataInv.map(i => i.Activo),
-                        datasets: [{
-                            data: dataInv.map(i => parseFloat(i.Valor_Total_ARS) || 0),
-                            backgroundColor: ['#6366f1', '#818cf8', '#a5b4fc', '#c7d2fe', '#e0e7ff'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: { plugins: { legend: { position: 'bottom' } } }
-                });
-            } catch (e) { console.error("Error cargando gráficos", e); }
-        }
-
-        document.getElementById('finance-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            const status = document.getElementById('status-msg');
-            btn.disabled = true;
-            btn.innerText = "Guardando...";
-
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            
-            // Lógica de Pilar
-            if (data.Categoria === "Guardia") data.Pilar_Regla = "Ingreso";
-            else if (["Alquiler", "Supermercado"].includes(data.Categoria)) data.Pilar_Regla = "Necesidades (50%)";
-            else if (data.Categoria === "Salidas") data.Pilar_Regla = "Deseos (30%)";
-            else data.Pilar_Regla = "Ahorro/Inversion (20%)";
-            
-            data.Usuario = currentUser;
-
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                status.classList.remove('hidden');
-                e.target.reset();
-                document.getElementById('Fecha').valueAsDate = new Date();
-                
-                // ACTUALIZACIÓN SILENCIOSA
-                await loadCharts(); // Recargamos solo los gráficos sin cerrar sesión
-                
-                setTimeout(() => { status.classList.add('hidden'); }, 3000);
-            } catch (err) { alert("Error al guardar"); }
-            finally { 
-                btn.disabled = false; 
-                btn.innerText = "CONFIRMAR REGISTRO"; 
-            }
-        });
-    </script>
-</body>
-</html>
+    MsgBox "Estructura creada. Completa precios en Inversiones_Ahorro y ajusta estilos manualmente.", vbInformation
+End Sub
