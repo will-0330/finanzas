@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmony Finanzas v9</title>
+    <title>Harmony Finanzas v10</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -20,7 +20,7 @@
             
             <div class="space-y-4 text-left">
                 <input type="text" id="user-input" placeholder="Usuario" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                <input type="password" id="pass-input" placeholder="PIN (ej: 1234)" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                <input type="password" id="pass-input" placeholder="PIN" class="w-full p-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                 <button onclick="handleAuth()" id="auth-btn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95">INGRESAR</button>
                 <button onclick="toggleAuthMode()" id="toggle-btn" class="w-full text-center text-sm font-semibold text-indigo-600 pt-2">¿Nuevo? Regístrate</button>
             </div>
@@ -30,17 +30,15 @@
     <div id="main-app" class="hidden min-h-screen">
         <header class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b border-slate-100 p-5 flex justify-between items-center">
             <h2 class="font-bold text-slate-900 text-lg">Hola, <span id="user-logged" class="text-indigo-600">User</span></h2>
-            <button onclick="location.reload()" class="p-3 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50 hover:text-red-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" /></svg>
+            <button onclick="logout()" class="p-3 bg-slate-100 rounded-full text-slate-500 hover:bg-red-50 hover:text-red-600 transition">
+                Cerrar Sesión
             </button>
         </header>
 
         <main class="max-w-5xl mx-auto p-5 space-y-8">
-            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Mi Balance (Regla 50/30/20)</h3>
-                    <div id="balance-diag" class="hidden text-center text-red-500 py-10 font-medium bg-red-50 rounded-xl">Cargando datos de Balance...</div>
                     <div class="chart-container flex justify-center items-center">
                         <canvas id="pilarChart"></canvas>
                     </div>
@@ -48,7 +46,6 @@
 
                 <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Mis Activos (Bolsa/Ahorro)</h3>
-                    <div id="invest-diag" class="hidden text-center text-red-500 py-10 font-medium bg-red-50 rounded-xl">Cargando datos de Activos...</div>
                     <div class="chart-container flex justify-center items-center">
                         <canvas id="assetsChart"></canvas>
                     </div>
@@ -59,21 +56,22 @@
                 <h3 class="font-extrabold text-2xl text-slate-950 mb-10">Nuevo Registro</h3>
                 <form id="finance-form" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <input type="date" id="Fecha" name="Fecha" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-300" required>
+                        <input type="date" id="Fecha" name="Fecha" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none" required>
                         <input type="number" name="Monto" step="0.01" placeholder="Monto $" class="p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold text-indigo-600 text-2xl" required>
                     </div>
-                    <input type="text" name="Concepto" placeholder="Detalle (ej: Supermercado o Guardia)" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-300" required>
-                    <select id="Categoria" name="Categoria" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-300" required>
+                    <input type="text" name="Concepto" placeholder="Detalle (ej: Supermercado)" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none" required>
+                    <select id="Categoria" name="Categoria" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none" required>
                         <option value="Guardia">💰 Ingreso: Guardia</option>
                         <option value="Alquiler">🏠 Necesidad: Alquiler / Vivienda</option>
                         <option value="Supermercado">🛒 Necesidad: Supermercado</option>
                         <option value="Salidas">🍷 Deseo: Salidas y Ocio</option>
                         <option value="Inversión">📈 Ahorro: Compra Activo</option>
                     </select>
-                    <button type="submit" id="submit-btn" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition active:scale-95 text-lg">
-                        CONFIRMAR REGISTRO EN LA NUBE
+                    <button type="submit" id="submit-btn" class="w-full bg-indigo-600 text-white font-bold py-5 rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-95 text-lg">
+                        CONFIRMAR REGISTRO
                     </button>
                 </form>
+                <p id="status-msg" class="text-center mt-4 font-bold text-green-600 hidden">✅ Guardado correctamente</p>
             </div>
         </main>
     </div>
@@ -82,13 +80,12 @@
         const API_URL = 'https://api.sheetbest.com/sheets/c69df2de-cb38-4d8b-b942-7616b4683eeb';
         let isLoginMode = true;
         let currentUser = "";
+        let charts = {}; // Para guardar las instancias de los gráficos
 
-        // LÓGICA DE AUTENTICACIÓN (Local)
         function toggleAuthMode() {
             isLoginMode = !isLoginMode;
             document.getElementById('auth-title').innerText = isLoginMode ? "Bienvenido" : "Crea tu Cuenta";
             document.getElementById('auth-btn').innerText = isLoginMode ? "INGRESAR" : "REGISTRARME";
-            document.getElementById('toggle-btn').innerText = isLoginMode ? "¿Nuevo? Regístrate" : "¿Ya tienes cuenta? Ingresa";
         }
 
         function handleAuth() {
@@ -99,15 +96,16 @@
 
             if (isLoginMode) {
                 if (users[user] && users[user] === pin) { startApp(user); }
-                else { alert("PIN incorrecto o usuario no encontrado"); }
+                else { alert("Datos incorrectos"); }
             } else {
-                if (users[user]) return alert("El usuario ya existe");
                 users[user] = pin;
                 localStorage.setItem('harmony_users', JSON.stringify(users));
-                alert("¡Registro exitoso! Ya puedes ingresar.");
+                alert("¡Registrado! Ya puedes ingresar.");
                 toggleAuthMode();
             }
         }
+
+        function logout() { location.reload(); }
 
         function startApp(user) {
             currentUser = user;
@@ -118,18 +116,14 @@
             loadCharts();
         }
 
-        // CARGA DE GRÁFICOS (Con Diagnóstico)
         async function loadCharts() {
-            // 1. Gráfico Balance (Torta)
-            const balDiag = document.getElementById('balance-diag');
-            balDiag.classList.remove('hidden');
             try {
+                // Balance
                 const resBal = await fetch(`${API_URL}/tabs/Balance`);
-                if (!resBal.ok) throw new Error("Pestaña 'Balance' no encontrada o vacía.");
                 const dataBal = await resBal.json();
-                if (dataBal.length < 2) throw new Error("Datos de Balance insuficientes.");
-
-                new Chart(document.getElementById('pilarChart'), {
+                
+                if (charts.pilar) charts.pilar.destroy();
+                charts.pilar = new Chart(document.getElementById('pilarChart'), {
                     type: 'doughnut',
                     data: {
                         labels: dataBal.map(d => d.Pilar),
@@ -139,24 +133,15 @@
                             borderWidth: 0
                         }]
                     },
-                    options: { cutout: '75%', plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } } } }
+                    options: { cutout: '75%', plugins: { legend: { position: 'bottom' } } }
                 });
-                balDiag.classList.add('hidden');
-            } catch (e) {
-                balDiag.innerText = `❌ Error Balance: ${e.message}`;
-                console.error(e);
-            }
 
-            // 2. Gráfico Activos (Torta)
-            const invDiag = document.getElementById('invest-diag');
-            invDiag.classList.remove('hidden');
-            try {
+                // Activos
                 const resInv = await fetch(`${API_URL}/tabs/Inversiones_Ahorro`);
-                if (!resInv.ok) throw new Error("Pestaña 'Inversiones_Ahorro' no encontrada o vacía.");
                 const dataInv = await resInv.json();
-                if (dataInv.length === 0) throw new Error("No hay activos registrados.");
-
-                new Chart(document.getElementById('assetsChart'), {
+                
+                if (charts.assets) charts.assets.destroy();
+                charts.assets = new Chart(document.getElementById('assetsChart'), {
                     type: 'pie',
                     data: {
                         labels: dataInv.map(i => i.Activo),
@@ -166,26 +151,22 @@
                             borderWidth: 0
                         }]
                     },
-                    options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } } } }
+                    options: { plugins: { legend: { position: 'bottom' } } }
                 });
-                invDiag.classList.add('hidden');
-            } catch (e) {
-                invDiag.innerText = `❌ Error Activos: ${e.message}`;
-                console.error(e);
-            }
+            } catch (e) { console.error("Error cargando gráficos", e); }
         }
 
-        // GUARDAR MOVIMIENTO
         document.getElementById('finance-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
+            const status = document.getElementById('status-msg');
             btn.disabled = true;
-            btn.innerText = "Sincronizando con Google Sheets...";
+            btn.innerText = "Guardando...";
 
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
             
-            // Asignación de pilar automática
+            // Lógica de Pilar
             if (data.Categoria === "Guardia") data.Pilar_Regla = "Ingreso";
             else if (["Alquiler", "Supermercado"].includes(data.Categoria)) data.Pilar_Regla = "Necesidades (50%)";
             else if (data.Categoria === "Salidas") data.Pilar_Regla = "Deseos (30%)";
@@ -199,12 +180,20 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                alert("✅ Movimiento guardado correctamente.");
+                
+                status.classList.remove('hidden');
                 e.target.reset();
                 document.getElementById('Fecha').valueAsDate = new Date();
-                location.reload(); // Recarga para actualizar gráficos
-            } catch (err) { alert("❌ Error de red al guardar."); }
-            finally { btn.disabled = false; btn.innerText = "CONFIRMAR REGISTRO EN LA NUBE"; }
+                
+                // ACTUALIZACIÓN SILENCIOSA
+                await loadCharts(); // Recargamos solo los gráficos sin cerrar sesión
+                
+                setTimeout(() => { status.classList.add('hidden'); }, 3000);
+            } catch (err) { alert("Error al guardar"); }
+            finally { 
+                btn.disabled = false; 
+                btn.innerText = "CONFIRMAR REGISTRO"; 
+            }
         });
     </script>
 </body>
