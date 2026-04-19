@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmony Finanzas v12</title>
+    <title>Harmony Finanzas v13</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -11,20 +11,16 @@
             theme: { extend: { colors: { brand: { blue: '#1e3a8a', green: '#10b981', bg: '#f0fdf4' } } } }
         }
     </script>
-    <style>
-        .chart-container { position: relative; height:220px; width:100%; }
-        body { -webkit-tap-highlight-color: transparent; background-color: #f0fdf4; }
-    </style>
 </head>
-<body class="font-sans text-slate-800 pb-20">
+<body class="bg-brand-bg font-sans text-slate-800 pb-20">
 
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6 bg-white">
         <div class="max-w-md w-full text-center">
-            <h1 class="text-4xl font-extrabold text-brand-blue mb-2">Harmony</h1>
-            <div class="space-y-4 text-left bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 mt-6">
+            <h1 class="text-4xl font-extrabold text-brand-blue mb-8">Harmony</h1>
+            <div class="space-y-4 bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
                 <input type="text" id="user-input" placeholder="Usuario" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <input type="password" id="pass-input" placeholder="PIN" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
-                <button onclick="handleAuth()" class="w-full bg-brand-blue text-white font-bold py-4 rounded-2xl">INGRESAR</button>
+                <button onclick="handleAuth()" class="w-full bg-brand-blue text-white font-bold py-4 rounded-2xl hover:bg-black transition">INGRESAR</button>
             </div>
         </div>
     </div>
@@ -32,39 +28,59 @@
     <div id="main-app" class="hidden min-h-screen">
         <header class="bg-white border-b p-5 flex justify-between items-center sticky top-0 z-50">
             <h2 class="font-bold text-lg">Hola, <span id="user-logged" class="text-brand-blue"></span></h2>
-            <button onclick="logout()" class="text-xs font-bold text-red-500">Cerrar Sesión</button>
+            <button onclick="logout()" class="text-xs font-bold text-red-500 bg-red-50 px-3 py-1 rounded-full">Salir</button>
         </header>
 
-        <main class="max-w-6xl mx-auto p-5 space-y-8">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-400 mb-4">BALANCE 50/30/20</h3>
-                    <div class="chart-container"><canvas id="pilarChart"></canvas></div>
+        <main class="max-w-4xl mx-auto p-5 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm text-center">
+                    <h3 class="text-[10px] font-bold text-slate-400 mb-4 tracking-tighter">BALANCE 50/30/20</h3>
+                    <canvas id="pilarChart" height="200"></canvas>
                 </div>
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm">
-                    <h3 class="text-xs font-bold text-slate-400 mb-4">MIS ACTIVOS</h3>
-                    <div class="chart-container"><canvas id="assetsChart"></canvas></div>
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm text-center">
+                    <h3 class="text-[10px] font-bold text-slate-400 mb-4 tracking-tighter">MIS ACTIVOS</h3>
+                    <canvas id="assetsChart" height="200"></canvas>
                 </div>
             </div>
 
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-lg border-l-4 border-brand-green">
-                <h3 class="font-extrabold text-2xl mb-6">Nuevo Registro</h3>
-                <form id="finance-form" onsubmit="saveData(event)" class="space-y-4">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-lg border-l-8 border-brand-green">
+                <h3 class="font-black text-2xl mb-8 text-slate-900">Nuevo Registro</h3>
+                <div class="space-y-5">
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="date" id="Fecha" name="Fecha" class="p-4 bg-slate-50 rounded-xl border" required>
-                        <input type="number" name="Monto" step="0.01" placeholder="$ Monto" class="p-4 bg-slate-50 rounded-xl border font-bold text-brand-green" required>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 ml-2">FECHA</label>
+                            <input type="date" id="reg-fecha" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 outline-none focus:ring-2 focus:ring-brand-green">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-400 ml-2">MONTO ARS</label>
+                            <input type="number" id="reg-monto" placeholder="0.00" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 outline-none focus:ring-2 focus:ring-brand-green font-bold text-brand-green">
+                        </div>
                     </div>
-                    <input type="text" name="Concepto" placeholder="Detalle" class="w-full p-4 bg-slate-50 rounded-xl border" required>
-                    <select id="Categoria" name="Categoria" class="w-full p-4 bg-slate-50 rounded-xl border" required>
-                        <option value="Guardia">💰 Ingreso: Guardia</option>
-                        <option value="Alquiler">🏠 Necesidad: Alquiler</option>
-                        <option value="Supermercado">🛒 Necesidad: Super</option>
-                        <option value="Salidas">🍷 Deseo: Ocio</option>
-                        <option value="Inversión">📈 Ahorro: Inversión</option>
-                    </select>
-                    <button type="submit" id="submit-btn" class="w-full bg-brand-blue text-white font-bold py-4 rounded-xl shadow-lg">GUARDAR EN DRIVE</button>
-                </form>
-                <p id="status-msg" class="text-center mt-4 font-bold text-brand-green hidden">✅ ¡Guardado con éxito!</p>
+                    
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 ml-2">DETALLE / CONCEPTO</label>
+                        <input type="text" id="reg-concepto" placeholder="Ej: Guardia o Super" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 outline-none focus:ring-2 focus:ring-brand-green">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[10px] font-bold text-slate-400 ml-2">CATEGORÍA</label>
+                        <select id="reg-categoria" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 outline-none focus:ring-2 focus:ring-brand-green">
+                            <option value="Guardia">💰 Ingreso: Guardia</option>
+                            <option value="Alquiler">🏠 Necesidad: Alquiler</option>
+                            <option value="Supermercado">🛒 Necesidad: Super</option>
+                            <option value="Salidas">🍷 Deseo: Ocio</option>
+                            <option value="Inversión">📈 Ahorro: Inversión</option>
+                        </select>
+                    </div>
+
+                    <button onclick="enviarDatosDirecto()" id="btn-save" class="w-full bg-brand-blue text-white font-black py-5 rounded-2xl shadow-xl hover:bg-black transition-all active:scale-95 mt-4">
+                        SINCRONIZAR CON DRIVE
+                    </button>
+                </div>
+            </div>
+
+            <div id="debug-log" class="text-[10px] font-mono text-slate-400 text-center uppercase tracking-widest">
+                Sistema listo para operar
             </div>
         </main>
     </div>
@@ -76,8 +92,7 @@
 
         function handleAuth() {
             const user = document.getElementById('user-input').value.trim();
-            const pin = document.getElementById('pass-input').value.trim();
-            if(user && pin) { 
+            if(user) { 
                 localStorage.setItem('harmony_user', user);
                 startApp(user); 
             }
@@ -88,7 +103,7 @@
             document.getElementById('user-logged').innerText = user;
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('Fecha').valueAsDate = new Date();
+            document.getElementById('reg-fecha').valueAsDate = new Date();
             loadCharts();
         }
 
@@ -104,66 +119,83 @@
                 if(charts.p) charts.p.destroy();
                 charts.p = new Chart(document.getElementById('pilarChart'), {
                     type: 'doughnut',
-                    data: { labels: dBal.map(x => x.Pilar), datasets: [{ data: dBal.map(x => x.Monto), backgroundColor: ['#1e3a8a','#4f46e5','#10b981'] }] }
+                    data: { labels: dBal.map(x => x.Pilar), datasets: [{ data: dBal.map(x => x.Monto), backgroundColor: ['#1e3a8a','#4f46e5','#10b981'], borderWidth:0 }] },
+                    options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } } }
                 });
 
                 if(charts.a) charts.a.destroy();
                 charts.a = new Chart(document.getElementById('assetsChart'), {
                     type: 'pie',
-                    data: { labels: dInv.map(x => x.Activo), datasets: [{ data: dInv.map(x => x.Valor_Total_ARS), backgroundColor: ['#059669','#10b981','#34d399','#6ee7b7'] }] }
+                    data: { labels: dInv.map(x => x.Activo), datasets: [{ data: dInv.map(x => x.Valor_Total_ARS), backgroundColor: ['#059669','#10b981','#34d399','#6ee7b7'], borderWidth:0 }] },
+                    options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 10 } } } } }
                 });
-            } catch(e) { console.log("Error cargando gráficos"); }
+            } catch(e) { document.getElementById('debug-log').innerText = "Error cargando gráficos de Drive"; }
         }
 
-        async function saveData(e) {
-            e.preventDefault();
-            e.stopPropagation(); // BLOQUEA LA RECARGA DE PÁGINA
+        async function enviarDatosDirecto() {
+            const btn = document.getElementById('btn-save');
+            const log = document.getElementById('debug-log');
             
-            const btn = document.getElementById('submit-btn');
-            const status = document.getElementById('status-msg');
+            // Captura manual de valores
+            const fecha = document.getElementById('reg-fecha').value;
+            const monto = document.getElementById('reg-monto').value;
+            const concepto = document.getElementById('reg-concepto').value;
+            const categoria = document.getElementById('reg-categoria').value;
+
+            if(!monto || !concepto) return alert("Por favor completa monto y detalle");
+
             btn.disabled = true;
-            btn.innerText = "ENVIANDO...";
+            btn.innerText = "CONECTANDO...";
+            log.innerText = "Iniciando transferencia segura...";
 
-            const form = document.getElementById('finance-form');
-            const formData = new FormData(form);
-            const rawData = Object.fromEntries(formData);
-            
-            // Asignación de pilar
+            // Lógica de Pilar
             let pilar = "Ahorro/Inversion (20%)";
-            if (rawData.Categoria === "Guardia") pilar = "Ingreso";
-            else if (["Alquiler", "Supermercado"].includes(rawData.Categoria)) pilar = "Necesidades (50%)";
-            else if (rawData.Categoria === "Salidas") pilar = "Deseos (30%)";
+            if (categoria === "Guardia") pilar = "Ingreso";
+            else if (["Alquiler", "Supermercado"].includes(categoria)) pilar = "Necesidades (50%)";
+            else if (categoria === "Salidas") pilar = "Deseos (30%)";
 
-            const dataToSend = [{
-                ...rawData,
+            const payload = [{
+                Fecha: fecha,
+                Monto: monto,
+                Concepto: concepto,
+                Categoria: categoria,
                 Pilar_Regla: pilar,
                 Usuario: currentUser,
-                Fecha: rawData.Fecha // Formato YYYY-MM-DD
+                ID: Date.now() // ID único basado en tiempo
             }];
 
             try {
-                const response = await fetch(API_URL, {
+                const res = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSend)
+                    body: JSON.stringify(payload)
                 });
 
-                if(response.ok) {
-                    status.classList.remove('hidden');
-                    form.reset();
-                    document.getElementById('Fecha').valueAsDate = new Date();
+                if(res.ok) {
+                    log.innerText = "¡Sincronización exitosa con Drive!";
+                    log.className = "text-[10px] font-mono text-brand-green text-center uppercase tracking-widest";
+                    
+                    // Limpiar campos
+                    document.getElementById('reg-monto').value = "";
+                    document.getElementById('reg-concepto').value = "";
+                    
+                    // Actualizar gráficos
                     await loadCharts();
-                    setTimeout(() => status.classList.add('hidden'), 3000);
                 } else {
-                    alert("Error en el servidor de Google Sheets");
+                    log.innerText = "Error: El servidor de Drive no respondió";
+                    alert("Error en la conexión. Verifica tu API de Sheet Best.");
                 }
             } catch (err) {
-                alert("Error de conexión. Revisa tu internet.");
+                log.innerText = "Error de red: Sin internet o API bloqueada";
+                alert("Fallo de red.");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "GUARDAR EN DRIVE";
+                btn.innerText = "SINCRONIZAR CON DRIVE";
+                setTimeout(() => {
+                    log.className = "text-[10px] font-mono text-slate-400 text-center uppercase tracking-widest";
+                    log.innerText = "Sistema listo para operar";
+                }, 4000);
             }
-            return false;
         }
 
         function logout() {
@@ -171,7 +203,6 @@
             location.reload();
         }
 
-        // Auto-login si ya existe el usuario
         window.onload = () => {
             const saved = localStorage.getItem('harmony_user');
             if(saved) startApp(saved);
